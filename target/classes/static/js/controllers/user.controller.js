@@ -1,4 +1,4 @@
-app.controller('usersController', function($scope,$http,$cookies,$rootScope,userService,postService,globalService) {
+app.controller('usersController', function($scope,$http,$cookies,$rootScope,userService,postService,globalService,DTOptionsBuilder, DTColumnBuilder) {
 	$scope.getUsers = function(){
 		$http.post("/api/get-users")
 		.success(function (data) {
@@ -9,6 +9,16 @@ app.controller('usersController', function($scope,$http,$cookies,$rootScope,user
 		.error(function (data) {
 			console.log(data);
 		});
+	}
+	
+	$scope.DTinit = function(){
+		$scope.dtOptions = DTOptionsBuilder.fromSource('/data/users')
+	        .withPaginationType('full_numbers');
+		$scope.dtColumns = [
+	        DTColumnBuilder.newColumn('id').withTitle('ID'),
+	        DTColumnBuilder.newColumn('name').withTitle('Name'),
+	        DTColumnBuilder.newColumn('email').withTitle('Email').notVisible()
+	    ];
 	}
 
 
