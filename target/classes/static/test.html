@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<link rel="stylesheet" type="text/css"
+	href="//cdn.datatables.net/1.10.7/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css"
+	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css"
+	href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css"
+	href="https://cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css" />
+	<link rel="stylesheet" type="text/css"
+	href="https://cdn.datatables.net/select/1.2.0/css/select.dataTables.min.css" />
+	<link rel="stylesheet" type="text/css"
+	href="/css/editor.dataTables.min.css" />
+	
+	
+
+<title>DataTables</title>
+</head>
+<body>
+	<table id="sample" class="table table-striped table-bordered"
+		cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Имэйл</th>
+				<th>Нэр</th>
+			</tr>
+		</thead>
+	</table>
+	<script src="//code.jquery.com/jquery-1.12.3.js"></script>
+	<script type="text/javascript"
+		src="/js/library/jquery.spring-friendly.js"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			var editor = new $.fn.dataTable.Editor( {
+				ajax: {
+					url:  '/data/users',
+				    data: function ( d ) {
+				    	d['model'] = "User";
+				      return JSON.stringify( d );
+				    },
+				    dataType:"json",
+				    mimeType:"application/json",
+				    contentType:"application/json"
+				  },
+			    table: '#sample',
+			    idSrc:  'id',
+			    fields: [
+			        { label: 'Email',  name: 'email'},
+			        { label: 'Name', name: 'name' }
+			    ]
+			} );
+			var table = $('table#sample').DataTable({
+				'ajax' : '/data/users',
+				'serverSide' : true,
+				select: true,
+				dom: 'Bfrtip',
+				columns : [ {
+					data : 'id'
+				}, {
+					data : 'email'
+				}, {
+					data : 'name'
+				} ],
+				select: {
+		            style:    'os',
+		            selector: 'td:first-child'
+		        },
+		        buttons: [
+		            { extend: "create", editor: editor },
+		            { extend: "edit",   editor: editor },
+		            { extend: "remove", editor: editor }
+		        ]
+			});
+			
+			$('#sample tbody').on('click', 'tr', function () {
+		        var data = table.row( this ).data();
+		        console.log( 'You clicked on '+data['name']+'\'s row' );
+		    } );
+			
+			$('#sample').on( 'click', 'tbody td:not(:first-child)', function (e) {
+		        editor.inline( this );
+		    } );
+
+			/*	$('select#role_selector').change(function() {
+					var filter = '';
+					$('select#role_selector option:selected').each(function() {
+						filter += $(this).text() + "+";
+					});
+					filter = filter.substring(0, filter.length - 1);
+					table.columns(2).search(filter).draw();
+				});
+
+				$('select#status_selector').change(function() {
+					var filter = '';
+					$('select#status_selector option:selected').each(function() {
+						filter += $(this).text() + "+";
+					});
+					filter = filter.substring(0, filter.length - 1);
+					table.columns(3).search(filter).draw();
+				});*/
+		});
+	</script>
+
+	<script
+		src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script
+		src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+		<script
+		src="/js/library/dataTables.editor.min.js"></script>
+		<script
+		src="https://cdn.datatables.net/select/1.2.0/js/dataTables.select.min.js"></script>
+		<script
+		src="https://cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
+</body>
+</html>
