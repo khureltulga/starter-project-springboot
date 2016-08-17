@@ -7,14 +7,14 @@
 	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 <link rel="stylesheet" type="text/css"
 	href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
-	<link rel="stylesheet" type="text/css"
+<link rel="stylesheet" type="text/css"
 	href="https://cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css" />
-	<link rel="stylesheet" type="text/css"
+<link rel="stylesheet" type="text/css"
 	href="https://cdn.datatables.net/select/1.2.0/css/select.dataTables.min.css" />
-	<link rel="stylesheet" type="text/css"
+<link rel="stylesheet" type="text/css"
 	href="/css/editor.dataTables.min.css" />
-	
-	
+
+
 
 <title>DataTables</title>
 </head>
@@ -53,18 +53,20 @@
 			        { label: 'Name', name: 'name' }
 			    ]
 			} );
+			
 			var table = $('table#sample').DataTable({
 				'ajax' : '/data/users',
 				'serverSide' : true,
 				select: true,
 				dom: 'Bfrtip',
+				"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
 				columns : [ {
 					data : 'id'
 				}, {
 					data : 'email'
 				}, {
 					data : 'name'
-				} ],
+				}],
 				select: {
 		            style:    'os',
 		            selector: 'td:first-child'
@@ -109,11 +111,10 @@
 		src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 	<script
 		src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
-		<script
-		src="/js/library/dataTables.editor.min.js"></script>
-		<script
+	<script src="/js/library/dataTables.editor.min.js"></script>
+	<script
 		src="https://cdn.datatables.net/select/1.2.0/js/dataTables.select.min.js"></script>
-		<script
+	<script
 		src="https://cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
 </body>
 </html>

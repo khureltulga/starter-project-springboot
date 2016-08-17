@@ -67,6 +67,10 @@ public class UserDao {
 		}
 	}
 	
+	public Object getByIdGlobal(long id, String model) throws ClassNotFoundException {
+		return getSession().load(Class.forName("com.tulgaa.model."+model), id);
+	}
+	
 	public void deleteGlobal(Object obj){
 		getSession().delete(obj);
 	}

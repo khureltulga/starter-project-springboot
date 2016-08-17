@@ -3,10 +3,13 @@ package com.tulgaa.controller;
 
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.WebUtils;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.tulgaa.model.Post;
@@ -53,47 +57,56 @@ public class ApiController {
 	}
 
 	@RequestMapping(value = "/data/users", method = RequestMethod.POST)
-	public String createUser(@RequestBody String jsonstr) throws ClassNotFoundException, JSONException, InstantiationException, IllegalAccessException {
+	public String createUser(@RequestBody String jsonstr) throws ClassNotFoundException, JSONException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
 		User u = null;
 		JSONObject result = new JSONObject();
 		JSONObject obj=new JSONObject(jsonstr);
 		String action = obj.getString("action");
 		JSONObject data = obj.getJSONObject("data");
-		
-		/*Class classTemp = Class.forName(obj.getString("model"));
-		Object objTemp =classTemp.newInstance();*/
-		
+
+		Class classTemp = Class.forName("com.tulgaa.model."+obj.getString("model"));
+		//System.out.println(classTemp.getDeclaredFields());
+		//Object objTemp =classTemp.newInstance();
+		Field[] fields = classTemp.getDeclaredFields();
 		switch (action) {
 		case "create":
 			JSONObject d = data.getJSONObject("0");
-			u = new User(d.getString("email"),d.getString("name"));
-			_userDao.saveGlobal(u);
+			//u = new User(d.getString("email"),d.getString("name"));
+			u = (User) classTemp.newInstance();
+			for(int i=0;i<data.getNames(data).length;i++){
+				d = data.getJSONObject(JSONObject.getNames(data)[i]);
+				for( Field field : fields ){
+					if (d.has(field.getName())){
+						u.setField(field.getName(), field.getType().cast(d.get(field.getName())));
+					}
+				}
+			}
+			userRepository.save(u);
 			result.put("data", u);
 			break;
 		case "edit":
-			
 			for(int i=0;i<data.getNames(data).length;i++){
-				u = _userDao.getById(Long.parseLong(data.getNames(data)[i]));
+				u = (User)_userDao.getByIdGlobal(Long.parseLong(data.getNames(data)[i]),obj.getString("model"));
 				if (!u.equals(null)){
-					d = data.getJSONObject(data.getNames(data)[i]);
-					if (d.has("email")){
-						u.setEmail(d.getString("email"));
+					d = data.getJSONObject(JSONObject.getNames(data)[i]);
+
+					for( Field field : fields ){
+						if (d.has(field.getName())){
+							u.setField(field.getName(), field.getType().cast(d.get(field.getName())));
+						}
 					}
-					if (d.has("name")){
-						u.setName(d.getString("name"));
-					}
+
 					userRepository.save(u);
 					result.put("data", u);
-					//_userDao.updateGlobal(u);
 				}
 			}
 			break;
 		case "remove":
 			for(int i=0;i<data.getNames(data).length;i++){
-				u = _userDao.getById(Long.parseLong(data.getNames(data)[i]));
+				u = (User)_userDao.getByIdGlobal(Long.parseLong(data.getNames(data)[i]),obj.getString("model"));
 				if (!u.equals(null)){
 					userRepository.delete(u);
-					result.put("data", u);
+					//result.put("data", "");
 					//_userDao.updateGlobal(u);
 				}
 			}

@@ -1,5 +1,7 @@
 package com.tulgaa.model;
 
+import java.lang.reflect.Field;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,6 +11,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.json.JSONObject;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -16,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Table(name="users")
 @NamedQuery(name="User.findAll", query="SELECT u FROM User u")
-public class User {
+public class User{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,6 +31,10 @@ public class User {
 	@JsonView(DataTablesOutput.View.class)
 	private String email;
 	
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	@Size(min = 3, max = 80)
 	@JsonView(DataTablesOutput.View.class)
 	private String password;
@@ -81,5 +88,10 @@ public class User {
 	public void setName(String value) {
 		this.name = value;
 	}
+	
+	public void setField(String aFieldName, Object aValue) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		Field aField = getClass().getDeclaredField(aFieldName);
+		aField.set(this, aValue);
+    }
 
 }
