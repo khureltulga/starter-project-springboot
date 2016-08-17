@@ -1,0 +1,24 @@
+<form class="col s12" ng-submit="RegisterNewUser(new_user)">
+
+	<div class="row">
+		<div class="input-field col s12">
+			<input name="email" id="user_email" type="email" class="validate"
+				ng-model="new_user.email"> <label for="user_email">Email
+				Address</label>
+		</div>
+		<div class="input-field col s12">
+			<input name="name" id="user_name" type="text" class="validate"
+				ng-model="new_user.name"> <label for="user_name">Full
+				name</label>
+		</div>
+		<div class="input-field col s12">
+			<input name="password" id="user_password" type="password"
+				class="validate" ng-model="new_user.password"> <label
+				for="user_password">Password</label>
+		</div>
+		<center>
+			<input type="submit" value="Register" class="btn">
+		</center>
+
+	</div>
+</form>
