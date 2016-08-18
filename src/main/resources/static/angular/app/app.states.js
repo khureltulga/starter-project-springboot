@@ -853,7 +853,8 @@ altairApp
                             return $ocLazyLoad.load([
                                 'bower_components/angular-resource/angular-resource.min.js',
                                 'lazy_datatables',
-                                'app/views/users/list.controller.js'
+                                'app/views/users/list.controller.js',
+                                'assets/js/custom/jquery.spring-friendly.js'
                             ]);
                         }]
                     },

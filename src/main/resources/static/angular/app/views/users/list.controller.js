@@ -1,13 +1,15 @@
 angular
     .module('altairApp')
     .controller('userListController',
-        function($compile, $scope, $timeout, $resource, DTOptionsBuilder, DTColumnDefBuilder) {
+        function($compile, $scope, $timeout, $resource, DTOptionsBuilder, DTColumnBuilder) {
             var vm = this;
+            
             vm.dtOptions = DTOptionsBuilder
                 .fromSource('/data/users')
-                .withOption('serverSide', true)
                 .withOption('processing', true)
+                .withOption('serverSide', true)
                 .withOption('order', [0, 'asc'])
+                .withDataProp('data')
                 .withDOM("<'dt-uikit-header'<'uk-grid'<'uk-width-medium-2-3'l><'uk-width-medium-1-3'f>>>" +
                     "<'uk-overflow-container'tr>" +
                     "<'dt-uikit-footer'<'uk-grid'<'uk-width-medium-3-10'i><'uk-width-medium-7-10'p>>>")
@@ -40,10 +42,19 @@ angular
                         titleAttr: 'PDF'
                     }
                 ]);
-            vm.dtColumnDefs = [
-                DTColumnDefBuilder.newColumnDef(0).withOption('data', 'id').withTitle('ID'),
-                DTColumnDefBuilder.newColumnDef(1).withOption('data', 'name').withTitle('Name'),
-                DTColumnDefBuilder.newColumnDef(2).withOption('data', 'email').withTitle('Email')
+            vm.dtColumn = [
+                DTColumnBuilder.newColumn("id").withOption('data', 'id').withTitle('ID'),
+                DTColumnBuilder.newColumn("name").withOption('data', 'name').withTitle('Name'),
+                DTColumnBuilder.newColumn("email").withOption('data', 'email').withTitle('Email'),
+                DTColumnBuilder.newColumn(null).withTitle('Actions').notSortable()
+                .renderWith(function(data, type, full, meta) {
+                    return '<center><a class="md-btn md-btn-primary md-btn-mini md-btn-wave-light md-btn-icon waves-effect waves-button waves-light" ng-click="edit(' + data.id + ')">' +
+                        '   <i class="material-icons">edit</i>' +
+                        '</a>&nbsp;' +
+                        '<a class="md-btn md-btn-danger md-btn-mini md-btn-wave-light md-btn-icon waves-effect waves-button waves-light" ng-click="delete(' + data.id + ')">' +
+                        '   <i class="material-icons">delete</i>' +
+                        '</a></center>';
+                })
             ];
         }
     );
