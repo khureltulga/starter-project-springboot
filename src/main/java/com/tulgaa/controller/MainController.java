@@ -10,7 +10,6 @@ public class MainController {
 
   @RequestMapping("/")
   public String index() {
-    return "test.html";
+    return "index.html";
   }
-
 }
