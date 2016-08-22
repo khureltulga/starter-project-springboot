@@ -15,9 +15,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tulgaa.model.MyUser;
 import com.tulgaa.model.UserDao;
 
-@Service("userDetailsService")
+@Service("MyUserDetailsService")
 public class MyUserDetailsService implements UserDetailsService {
 
 	 @Autowired
@@ -26,15 +27,15 @@ public class MyUserDetailsService implements UserDetailsService {
 	@Transactional(readOnly=true)
 	@Override
 	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-		System.out.println("@@@@@@@@@@@");
-		com.tulgaa.model.User user = userDao.getByEmail(username);
+		System.out.println("bla bla");
+		MyUser user = userDao.getByEmail(username);
 		List<GrantedAuthority> authorities = buildUserAuthority();
 
 		return buildUserForAuthentication(user, authorities);
 		
 	}
 
-	private User buildUserForAuthentication(com.tulgaa.model.User user, List<GrantedAuthority> authorities) {
+	private User buildUserForAuthentication(MyUser user, List<GrantedAuthority> authorities) {
 		return new User(user.getEmail(), user.getPassword(), true, true, true, true, authorities);
 	}
 

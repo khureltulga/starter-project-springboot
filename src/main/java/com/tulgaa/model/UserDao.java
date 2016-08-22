@@ -20,40 +20,40 @@ public class UserDao {
 		return _sessionFactory.getCurrentSession();
 	}
 
-	public void save(User user) {
+	public void save(MyUser user) {
 		getSession().save(user);
 		return;
 	}
 
-	public void delete(User user) {
+	public void delete(MyUser user) {
 		getSession().delete(user);
 		return;
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<User> getAll() {
+	public List<MyUser> getAll() {
 		return getSession().createQuery("from User").list();
 	}
 
-	public User getByEmail(String email) {
-		return (User) getSession().createQuery(
+	public MyUser getByEmail(String email) {
+		return (MyUser) getSession().createQuery(
 				"from User where email = :email")
 				.setParameter("email", email)
 				.uniqueResult();
 	}
 
-	public User getByUserID(long id) {
-		return (User) getSession().createQuery(
+	public MyUser getByUserID(long id) {
+		return (MyUser) getSession().createQuery(
 				"from User where id = :id")
 				.setParameter("id", id)
 				.uniqueResult();
 	}
 
-	public User getById(long id) {
-		return (User) getSession().load(User.class, id);
+	public MyUser getById(long id) {
+		return (MyUser) getSession().load(MyUser.class, id);
 	}
 
-	public void update(User user) {
+	public void update(MyUser user) {
 		getSession().update(user);
 		return;
 	}

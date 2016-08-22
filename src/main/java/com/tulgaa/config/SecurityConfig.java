@@ -1,14 +1,6 @@
 package com.tulgaa.config;
 
-import java.io.IOException;
-
 import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,31 +13,22 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.WebUtils;
-
-import com.tulgaa.service.MyUserDetailsService;
-
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-   
-    private static final Logger LOGGER = Logger.getLogger(SecurityConfig.class);
 	 
 	@Autowired
-	@Qualifier("userDetailsService")
+	@Qualifier("MyUserDetailsService")
 	UserDetailsService userDetailsService;
 
         
     @Autowired
-    public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {    	
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {    	
         auth.userDetailsService(userDetailsService);
         auth.authenticationProvider(authenticationProvider());
     }
@@ -73,6 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return filter;
     }
     
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -85,6 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             	.antMatchers("/file_manager/**").permitAll()
             	.antMatchers("/gulp-tasks/**").permitAll()
             	.antMatchers("/app/**").permitAll()
+            	.antMatchers("/api/**").permitAll()
             	.anyRequest()
 				.authenticated()
 				.and()
@@ -104,33 +89,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	            .and()
 				.csrf().disable();
     }
-    
-    private Filter csrfHeaderFilter() {
-		return new OncePerRequestFilter() {
-			@Override
-			protected void doFilterInternal(HttpServletRequest request,
-					HttpServletResponse response, FilterChain filterChain)
-					throws ServletException, IOException {
-				CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class
-						.getName());
-				if (csrf != null) {
-					Cookie cookie = WebUtils.getCookie(request, "XSRF-TOKEN");
-					String token = csrf.getToken();
-					if (cookie == null || token != null
-							&& !token.equals(cookie.getValue())) {
-						cookie = new Cookie("XSRF-TOKEN", token);
-						cookie.setPath("/");
-						response.addCookie(cookie);
-					}
-				}		
-				filterChain.doFilter(request, response);
-			}
-		};
-	}
-
-	private CsrfTokenRepository csrfTokenRepository() {
-		HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
-		repository.setHeaderName("X-XSRF-TOKEN");
-		return repository;
-	}
 }

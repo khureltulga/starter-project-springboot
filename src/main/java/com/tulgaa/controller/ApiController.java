@@ -2,19 +2,13 @@ package com.tulgaa.controller;
 
 
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,20 +19,15 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.WebUtils;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import com.tulgaa.model.Post;
-import com.tulgaa.model.User;
+import com.tulgaa.model.MyUser;
 import com.tulgaa.model.UserDao;
 import com.tulgaa.repository.UserRepository;
 
@@ -48,7 +37,6 @@ public class ApiController {
 	
 	@RequestMapping("/user")
 	public Principal user(Principal user) {
-		System.out.println("========== /USER =========");
 		return user;
 	}
 	
@@ -57,16 +45,16 @@ public class ApiController {
 
 	@Autowired
 	private UserDao _userDao;
-
+	
 	@JsonView(DataTablesOutput.View.class)
 	@RequestMapping(value = "/data/users", method = RequestMethod.GET)
-	public DataTablesOutput<User> getUsers(@Valid DataTablesInput input) {
+	public DataTablesOutput<MyUser> getUsers(@Valid DataTablesInput input) {
 		return userRepository.findAll(input);
 	}
 
 	@RequestMapping(value = "/data/users", method = RequestMethod.POST)
 	public String createUser(@RequestBody String jsonstr) throws ClassNotFoundException, JSONException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
-		User u = null;
+		MyUser u = null;
 		JSONObject result = new JSONObject();
 		JSONObject obj=new JSONObject(jsonstr);
 		String action = obj.getString("action");
@@ -80,7 +68,7 @@ public class ApiController {
 		case "create":
 			JSONObject d = data.getJSONObject("0");
 			//u = new User(d.getString("email"),d.getString("name"));
-			u = (User) classTemp.newInstance();
+			u = (MyUser) classTemp.newInstance();
 			for(int i=0;i<data.getNames(data).length;i++){
 				d = data.getJSONObject(JSONObject.getNames(data)[i]);
 				for( Field field : fields ){
@@ -94,7 +82,7 @@ public class ApiController {
 			break;
 		case "edit":
 			for(int i=0;i<data.getNames(data).length;i++){
-				u = (User)_userDao.getByIdGlobal(Long.parseLong(data.getNames(data)[i]),obj.getString("model"));
+				u = (MyUser)_userDao.getByIdGlobal(Long.parseLong(data.getNames(data)[i]),obj.getString("model"));
 				if (!u.equals(null)){
 					d = data.getJSONObject(JSONObject.getNames(data)[i]);
 
@@ -111,7 +99,7 @@ public class ApiController {
 			break;
 		case "remove":
 			for(int i=0;i<data.getNames(data).length;i++){
-				u = (User)_userDao.getByIdGlobal(Long.parseLong(data.getNames(data)[i]),obj.getString("model"));
+				u = (MyUser)_userDao.getByIdGlobal(Long.parseLong(data.getNames(data)[i]),obj.getString("model"));
 				if (!u.equals(null)){
 					userRepository.delete(u);
 					//result.put("data", "");
@@ -160,8 +148,8 @@ public class ApiController {
 
 	@RequestMapping(value="/api/get-by-email")
 	@ResponseBody
-	public User getByEmail(String email) {
-		User user;
+	public MyUser getByEmail(String email) {
+		MyUser user;
 		String userId;
 		try {
 			user = _userDao.getByEmail(email);
@@ -175,8 +163,8 @@ public class ApiController {
 
 	@RequestMapping(value="/api/get-users", method=RequestMethod.POST)
 	@ResponseBody
-	public List<User> getUsersApi() {
-		List<User> user;
+	public List<MyUser> getUsersApi() {
+		List<MyUser> user;
 		String userId;
 		user = _userDao.getAll();
 		return user;
@@ -184,11 +172,12 @@ public class ApiController {
 
 	@RequestMapping(value="/api/save", method=RequestMethod.POST)
 	@ResponseBody
-	public User create(@RequestBody String jsonstr) {
-		User user = null;
+	public MyUser create(@RequestBody String jsonstr) {
+		MyUser user = null;
 		JSONObject obj=new JSONObject(jsonstr);
 		try {
-			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			BCryptPasswordEncoder bp = new BCryptPasswordEncoder();
+			/*MessageDigest md = MessageDigest.getInstance("SHA-256");
 			md.update(obj.getString("password").getBytes());
 
 			byte byteData[] = md.digest();
@@ -199,8 +188,8 @@ public class ApiController {
 				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-			System.out.println("Hex format : " + sb.toString());
-			user = new User(obj.getString("email"), obj.getString("name"), sb.toString());
+			System.out.println("Hex format : " + sb.toString());*/
+			user = new MyUser(obj.getString("email"), obj.getString("name"), bp.encode(obj.getString("password")));
 			_userDao.save(user);
 			/*user = new User(email, name);
 			_userDao.save(user);*/
@@ -213,8 +202,8 @@ public class ApiController {
 
 	@RequestMapping(value="/api/get-user-detail", method=RequestMethod.POST)
 	@ResponseBody
-	public User getUserDetail(@RequestBody String jsonstr, HttpServletRequest request, HttpServletResponse response) {
-		User user = null;
+	public MyUser getUserDetail(@RequestBody String jsonstr, HttpServletRequest request, HttpServletResponse response) {
+		MyUser user = null;
 		JSONObject obj=new JSONObject(jsonstr);
 		user = _userDao.getByUserID(Long.parseLong(obj.getString("id")));
 		return user;
@@ -279,10 +268,10 @@ public class ApiController {
 
 	@RequestMapping(value="/api/login", method=RequestMethod.POST)
 	@ResponseBody
-	public User loginCheck(@RequestBody String jsonstr, HttpServletRequest request, HttpServletResponse response) throws NoSuchAlgorithmException {
+	public MyUser loginCheck(@RequestBody String jsonstr, HttpServletRequest request, HttpServletResponse response) throws NoSuchAlgorithmException {
 
 		JSONObject obj=new JSONObject(jsonstr);
-		User user = _userDao.getByEmail(obj.getString("email"));
+		MyUser user = _userDao.getByEmail(obj.getString("email"));
 		if (user != null){
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
 			md.update(obj.getString("password").getBytes());

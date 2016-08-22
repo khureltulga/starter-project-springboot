@@ -11,15 +11,14 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.json.JSONObject;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 @Table(name="users")
-@NamedQuery(name="User.findAll", query="SELECT u FROM User u")
-public class User{
+@NamedQuery(name="MyUser.findAll", query="SELECT u FROM MyUser u")
+public class MyUser{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -44,18 +43,18 @@ public class User{
 	@JsonView(DataTablesOutput.View.class)
 	private String name;
 
-	public User() { }
+	public MyUser() { }
 
-	public User(long id) { 
+	public MyUser(long id) { 
 		this.id = id;
 	}
 
-	public User(String email, String name) {
+	public MyUser(String email, String name) {
 		this.email = email;
 		this.name = name;
 	}
 
-	public User(String email, String name, String password) {
+	public MyUser(String email, String name, String password) {
 		this.email = email;
 		this.name = name;
 		this.password = password;

@@ -71,6 +71,7 @@ angular
                         	  };
                         	  
                         	  $scope.credentials = {};
+                        	  $scope.user = {};
                         	  
                         	  var authenticate = function(credentials, callback) {
 
@@ -129,6 +130,17 @@ angular
                         			  }
                         		  })
                         	  };
+                        	  
+                        	  $scope.register = function(){
+                        		  console.log($scope.user);
+                        		  
+                        		  $http({method: "POST", url: "/api/save", data: $scope.user}).
+                        	        then(function(response) {
+                        	          console.log(response);
+                        	        }, function(response) {
+                        	        	console.log(response);
+                        	      });
+                        	  }
 
                           }
                           ]);
