@@ -28,7 +28,7 @@ public class userDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
 	
 		com.tulgaa.model.User user = userDao.getByEmail(username);
-		List<GrantedAuthority> authorities = buildUserAuthority(user.getCLnkUserRoles());
+		List<GrantedAuthority> authorities = buildUserAuthority();
 
 		return buildUserForAuthentication(user, authorities);
 		
@@ -36,17 +36,14 @@ public class userDetailsService implements UserDetailsService {
 
 	// Converts com.mkyong.users.model.User user to
 	// org.springframework.security.core.userdetails.User
-	private User buildUserForAuthentication(CLutUser user, List<GrantedAuthority> authorities) {
-		return new User(user.getUsername(), user.getPassword(), user.getEnabled(), true, true, true, authorities);
+	private User buildUserForAuthentication(com.tulgaa.model.User user, List<GrantedAuthority> authorities) {
+		return new User(user.getEmail(), user.getPassword(), true, true, true, true, authorities);
 	}
 
-	private List<GrantedAuthority> buildUserAuthority(List<CLnkUserRole> list) {
+	private List<GrantedAuthority> buildUserAuthority() {
 		Set<GrantedAuthority> setAuths = new HashSet<GrantedAuthority>();
 
-		// Build user's authorities
-		for (CLnkUserRole userRole : list) {
-			setAuths.add(new SimpleGrantedAuthority(userRole.getCLutRole().getRolename()));
-		}
+		setAuths.add(new SimpleGrantedAuthority("USER"));
 
 		List<GrantedAuthority> Result = new ArrayList<GrantedAuthority>(setAuths);
 
