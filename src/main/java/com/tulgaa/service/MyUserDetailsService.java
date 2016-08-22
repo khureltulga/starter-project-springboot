@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tulgaa.model.UserDao;
 
 @Service("userDetailsService")
-public class userDetailsService implements UserDetailsService {
+public class MyUserDetailsService implements UserDetailsService {
 
 	 @Autowired
 	private UserDao userDao;
@@ -26,7 +26,7 @@ public class userDetailsService implements UserDetailsService {
 	@Transactional(readOnly=true)
 	@Override
 	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-	
+		System.out.println("@@@@@@@@@@@");
 		com.tulgaa.model.User user = userDao.getByEmail(username);
 		List<GrantedAuthority> authorities = buildUserAuthority();
 
@@ -34,8 +34,6 @@ public class userDetailsService implements UserDetailsService {
 		
 	}
 
-	// Converts com.mkyong.users.model.User user to
-	// org.springframework.security.core.userdetails.User
 	private User buildUserForAuthentication(com.tulgaa.model.User user, List<GrantedAuthority> authorities) {
 		return new User(user.getEmail(), user.getPassword(), true, true, true, true, authorities);
 	}
@@ -43,7 +41,7 @@ public class userDetailsService implements UserDetailsService {
 	private List<GrantedAuthority> buildUserAuthority() {
 		Set<GrantedAuthority> setAuths = new HashSet<GrantedAuthority>();
 
-		setAuths.add(new SimpleGrantedAuthority("USER"));
+		setAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
 
 		List<GrantedAuthority> Result = new ArrayList<GrantedAuthority>(setAuths);
 

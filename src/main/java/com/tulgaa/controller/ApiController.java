@@ -48,6 +48,7 @@ public class ApiController {
 	
 	@RequestMapping("/user")
 	public Principal user(Principal user) {
+		System.out.println("========== /USER =========");
 		return user;
 	}
 	

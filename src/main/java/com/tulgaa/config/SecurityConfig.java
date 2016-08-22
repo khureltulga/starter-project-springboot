@@ -29,43 +29,14 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
 
+import com.tulgaa.service.MyUserDetailsService;
+
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .authorizeRequests()
-            	.antMatchers("/","index.html","/package.json","/login","/user").permitAll()
-            	.antMatchers("/app/**").permitAll()
-            	.antMatchers("/assets/**").permitAll()
-            	.antMatchers("/bower_components/**").permitAll()
-            	.antMatchers("/data/**").permitAll()
-            	.antMatchers("/file_manager/**").permitAll()
-            	.antMatchers("/gulp-tasks/**").permitAll()
-            	.antMatchers("/app/**").permitAll()
-            	.anyRequest()
-				.authenticated()
-				.and()
-				    .logout()		
-				    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-				    .logoutSuccessUrl("/login?logout")                 
-					.invalidateHttpSession(true)                                    
-					.deleteCookies("JSESSIONID") 
-					.logoutSuccessUrl("/login")
-				.and()
-				   .sessionManagement()
-	               .invalidSessionUrl( "/#/login" )
-	               .sessionAuthenticationErrorUrl("/login")
-	               .maximumSessions( 1 )
-	               .expiredUrl("/login")
-	               .and()
-	            .and()
-				.csrf().disable();
-    }
-    
+   
     private static final Logger LOGGER = Logger.getLogger(SecurityConfig.class);
 	 
 	@Autowired
@@ -100,6 +71,38 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         filter.setEncoding("UTF-8");
         filter.setForceEncoding(true);
         return filter;
+    }
+    
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .authorizeRequests()
+            	.antMatchers("/","index.html","/package.json","/login","/user").permitAll()
+            	.antMatchers("/app/**").permitAll()
+            	.antMatchers("/assets/**").permitAll()
+            	.antMatchers("/bower_components/**").permitAll()
+            	.antMatchers("/data/**").permitAll()
+            	.antMatchers("/file_manager/**").permitAll()
+            	.antMatchers("/gulp-tasks/**").permitAll()
+            	.antMatchers("/app/**").permitAll()
+            	.anyRequest()
+				.authenticated()
+				.and()
+				    .logout()		
+				    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+				    .logoutSuccessUrl("/login?logout")                 
+					.invalidateHttpSession(true)                                    
+					.deleteCookies("JSESSIONID") 
+					.logoutSuccessUrl("/login")
+				.and()
+				   .sessionManagement()
+	               .invalidSessionUrl( "/#/login" )
+	               .sessionAuthenticationErrorUrl("/login")
+	               .maximumSessions( 1 )
+	               .expiredUrl("/login")
+	               .and()
+	            .and()
+				.csrf().disable();
     }
     
     private Filter csrfHeaderFilter() {
