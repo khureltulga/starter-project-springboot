@@ -1,4 +1,4 @@
-package com.tulgaa;
+package com.tulgaa.config;
 
 import java.io.IOException;
 

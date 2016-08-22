@@ -1,4 +1,4 @@
-package com.tulgaa;
+package com.tulgaa.config;
 import java.util.Properties;
 
 import javax.sql.DataSource;

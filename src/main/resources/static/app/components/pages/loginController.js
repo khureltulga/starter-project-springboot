@@ -83,6 +83,7 @@ angular
                         		  $http.get('/user', {
                         			  headers : headers
                         		  }).success(function(data) {
+                        			  console.log(data);
                         			  if (data.name) {						
                         				  //UIkit.notify("<i class='uk-icon-check'></i> Login success...", {status:'success',pos:'bottom-right',timeout: 0})
                         				  $rootScope.user=data;

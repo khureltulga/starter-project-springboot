@@ -20,10 +20,7 @@ public class MainController {
 		return "index.html";
 	}
 
-	@RequestMapping("/user")
-	public Principal user(Principal user) {
-		return user;
-	}
+	
 	
 /*	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public String login(@RequestParam(value = "error", required = false) String error,

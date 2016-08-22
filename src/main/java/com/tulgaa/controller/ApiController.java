@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,7 +44,13 @@ import com.tulgaa.repository.UserRepository;
 
 @RestController
 public class ApiController {
-
+	
+	
+	@RequestMapping("/user")
+	public Principal user(Principal user) {
+		return user;
+	}
+	
 	@Autowired
 	private UserRepository userRepository;
 
